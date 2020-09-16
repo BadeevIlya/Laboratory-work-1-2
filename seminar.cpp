@@ -4,30 +4,52 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
 
 struct truba {
-    int id;
+    string id;
     int dlina;
     int diametr;
     bool remont;
 };
 
 struct KS {
-    int id;
-    std::string Name;
+    string id;
+    string name;
     int vol;
     int workvol;
     int effect;
 };
 
-truba ttt() {
+truba createpipe () {
+    truba pipe;
+    cout << "¬ведите диаметр\n";
+    cin >>  pipe.diametr;
+    cout << "¬ведите длину\n";
+    cin >> pipe.dlina;
+    pipe.id = "";
+    pipe.remont = false;
+    return pipe;
+}
+
+KS createKS(){
+    KS ks;
+    cout << "¬ведите количество цехов\n ";
+    cin >> ks.vol;
+    cout << "¬ведите количество рабочих цехов\n";
+    cin >> ks.workvol;
+    cout << "¬ведите им€\n";
+    cin >> ks.name;
+    ks.id = "";
+
+    return ks;
 
 }
 
-int main()
-{
-    truba t
-    
+int main(){
+    setlocale(LC_ALL, "rus");
+    createpipe();
+    createKS();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
