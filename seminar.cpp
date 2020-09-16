@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -23,17 +24,29 @@ struct KS {
 
 truba createpipe () {
     truba pipe;
+    cout << "—читывание данных трубы" << endl << endl;
     cout << "¬ведите диаметр\n";
     cin >>  pipe.diametr;
     cout << "¬ведите длину\n";
     cin >> pipe.dlina;
     pipe.id = "";
     pipe.remont = false;
+    ofstream piperesults;
+    piperesults.open("D:\piperesults.txt");
+    piperesults <<pipe.diametr<<endl<<pipe.dlina<<endl;
+    piperesults.close();
+
     return pipe;
 }
 
-KS createKS(){
+void outcreatepipe(truba pipe) {
+    cout << "¬веденные данные трубы:\n";
+    cout << pipe.diametr << endl << pipe.dlina << endl;
+}
+
+KS createKS() {
     KS ks;
+    cout << "—читывание данных  —" << endl << endl;
     cout << "¬ведите количество цехов\n ";
     cin >> ks.vol;
     cout << "¬ведите количество рабочих цехов\n";
@@ -41,15 +54,14 @@ KS createKS(){
     cout << "¬ведите им€\n";
     cin >> ks.name;
     ks.id = "";
-
     return ks;
-
 }
 
 int main(){
     setlocale(LC_ALL, "rus");
-    createpipe();
+    outcreatepipe(createpipe());
     createKS();
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
