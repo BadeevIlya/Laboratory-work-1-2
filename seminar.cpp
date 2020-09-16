@@ -20,8 +20,13 @@ struct KS {
     int effect;
 };
 
+truba ttt() {
+
+}
+
 int main()
 {
+    truba t
     
 }
 
