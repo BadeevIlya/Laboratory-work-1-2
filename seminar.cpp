@@ -31,37 +31,79 @@ truba createpipe () {
     cin >> pipe.dlina;
     pipe.id = "";
     pipe.remont = false;
-    ofstream piperesults;
-    piperesults.open("D:\piperesults.txt");
-    piperesults <<pipe.diametr<<endl<<pipe.dlina<<endl;
-    piperesults.close();
-
     return pipe;
 }
 
-void outcreatepipe(truba pipe) {
-    cout << "Введенные данные трубы:\n";
-    cout << pipe.diametr << endl << pipe.dlina << endl;
+void increatepipe(truba in) {
+    cout << "Считанные из файла данные трубы:\n";
+    ifstream piperesults ("D:\piperesults.txt");
+    piperesults >> in.diametr >> in.dlina;
+    cout << in.diametr << endl << in.dlina << endl;
 }
+
+void outcreatepipe(truba out) {
+    cout << "Введенные данные трубы:\n";
+    cout << out.diametr << endl << out.dlina << endl;
+}
+
+void savecreatefile(truba save ) {
+    cout << "Данные сохранены в файл\n";
+    ofstream piperesults;
+    piperesults.open("D:\piperesults.txt");
+    piperesults << save.diametr << endl << save.dlina << endl;
+    piperesults.close();
+}
+
+void outcreateKS(KS out) {
+    cout << "Введенные данные КС:\n";
+    cout << out.vol <<endl<< out.workvol <<endl<< out.name << endl;
+}
+
+void increateKS(KS in) {
+    cout << "Считанные из файла данные КС:\n";
+    ifstream piperesults("D:\piperesults.txt");
+    piperesults >> in.vol >> in.workvol >>in.name;
+    cout << in.vol <<endl<< in.workvol << endl<< in.name << endl;
+}
+
+void savecreateKS(KS save) {
+    cout << "Данные сохранены в файл\n";
+    ofstream piperesults("D:\piperesults.txt");
+    piperesults << save.vol << endl << save.workvol << endl <<save.name;
+    piperesults.close();
+}
+
+
 
 KS createKS() {
     KS ks;
     cout << "Считывание данных КС" << endl << endl;
-    cout << "Введите количество цехов\n ";
+    cout << "Введите количество цехов\n";
     cin >> ks.vol;
     cout << "Введите количество рабочих цехов\n";
     cin >> ks.workvol;
     cout << "Введите имя\n";
     cin >> ks.name;
     ks.id = "";
+    ofstream piperesults;
+    piperesults.open("D:\piperesults.txt");
+    piperesults << ks.vol << endl << ks.workvol << endl << ks.name << endl;
+    piperesults.close();
     return ks;
 }
 
 int main(){
     setlocale(LC_ALL, "rus");
-    outcreatepipe(createpipe());
-    createKS();
-
+    truba crpipe;
+    crpipe = createpipe(); // запись данных трубы и передача их в переменную crpipe
+    outcreatepipe(crpipe); // вывод данных трубы на консоль
+    savecreatefile(crpipe); // сохранение данных трубы в файл piperesults.txt
+    increatepipe(crpipe); // считывание данных из файла и вывод их на консоль 
+    KS crKS;
+    crKS = createKS();
+    outcreateKS(crKS);
+    savecreateKS(crKS);
+    increateKS(crKS);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
