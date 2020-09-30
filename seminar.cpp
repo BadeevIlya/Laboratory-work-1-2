@@ -24,54 +24,75 @@ struct KS {
 
 truba createpipe () {
     truba pipe;
+    bool k;
     cout << "Считывание данных трубы" << endl << endl;
-    cout << "Введите диаметр\n";
-    cin >>  pipe.diametr;
-    cout << "Введите длину\n";
-    cin >> pipe.dlina;
+    do {
+        cout << "Введите диаметр\n";
+        cin >> pipe.diametr;
+        cout << "Введите длину\n";
+        cin >> pipe.dlina;
+        k = true;
+        if (pipe.diametr < 0 || pipe.dlina < 0) {
+            k = false;
+            cin.clear();
+            cin.ignore(100, '\n');
+        }
+
+    } while (cin.fail() || k==false);
     pipe.id = "";
     pipe.remont = false;
     return pipe;
 }
 
-void pipeediting(truba& edit) {
-    cout << "Вы хотете редактировать параметр 'в ремонте'? (по умолчанию false)\n1/0\n";
-    int k;
-    cin >> k;
-    if (k==1) {
-        edit.remont = true;
-    }
+void editpipe(truba&edit) { 
+    edit.remont = !edit.remont;
 }
+
+
 
 void increatepipe(truba in) {
     cout << "Считанные из файла данные трубы:\n";
     ifstream piperesults ("D:\piperesults.txt");
-    piperesults >> in.diametr >> in.dlina;
-    cout << in.diametr << endl << in.dlina << endl;
+    if (piperesults.is_open())
+    {
+        piperesults >> in.diametr >> in.dlina;
+        cout << in.diametr << endl << in.dlina << endl;
+        piperesults.close();
+    }
 }
 
 void outcreatepipe(truba out) {
     cout << "Введенные данные трубы:\n";
-    cout << out.diametr << endl << out.dlina << endl << out.remont<< endl;
+    cout << "Диаметр: "<< out.diametr << endl <<"Длина: "<< out.dlina << endl << out.remont<< endl;
 }
 
 void savecreatefile(truba save ) {
     cout << "Данные сохранены в файл\n";
-    ofstream piperesults;
-    piperesults.open("D:\piperesults.txt");
-    piperesults << save.diametr << endl << save.dlina << endl;
-    piperesults.close();
+    ofstream outpiperesults("D:\piperesults.txt");
+    if (outpiperesults.is_open()) {
+        outpiperesults << save.diametr << endl << save.dlina << endl;
+        outpiperesults.close();
+    }
+}
+
+bool CorrectTypeKS(int a, int b) { // функция проверки на корректность ввода
+    return a and b >= 0;
 }
 
 KS createKS() {
     KS ks;
-    cout << "Считывание данных КС" << endl << endl;
-    cout << "Введите количество цехов\n";
-    cin >> ks.vol;
-    cout << "Введите количество рабочих цехов\n";
-    cin >> ks.workvol;
-    cout << "Введите имя\n";
+    cout << "Считывание данных КС\n\n" ;
+    cout << "Введите название\n";
     cin >> ks.name;
+    do
+    {
+        cin.clear();
+        cin.ignore(100, '\n');
+        cout << "Введите количество цехов\n";
+        cin >> ks.vol;
+        cout << "Введите количество рабочих цехов\n";
+        cin >> ks.workvol;
+    } while (cin.fail() || !CorrectTypeKS(ks.vol,ks.workvol));
     ks.id = "";
     ks.effect = 1;
     ofstream piperesults;
@@ -83,33 +104,44 @@ KS createKS() {
 
 void outcreateKS(KS out) {
     cout << "Введенные данные КС:\n";
-    cout << out.vol <<endl<< out.workvol <<endl<< out.name << endl ;
+    cout << "Количество цехов: "<<out.vol <<endl<<"Количество рабочих цехов: "<< out.workvol <<endl<<"Название: "<< out.name << endl ;
 }
 
 void increateKS(KS in) {
     cout << "Считанные из файла данные КС:\n";
-    ifstream piperesults("D:\piperesults.txt");
-    piperesults >> in.vol >> in.workvol >>in.name;
-    cout << in.vol <<endl<< in.workvol << endl<< in.name << endl;
+    ifstream KSresults("D:\piperesults.txt");
+    if (KSresults.is_open()) {
+        KSresults >> in.vol >> in.workvol >> in.name;
+        cout << in.vol << endl << in.workvol << endl << in.name << endl;
+    }
 }
+
 
 void savecreateKS(KS save) {
     cout << "Данные сохранены в файл\n";
-    ofstream piperesults("D:\piperesults.txt");
-    piperesults << save.vol << endl << save.workvol << endl <<save.name;
-    piperesults.close();
+    ofstream KSresults("D:\piperesults.txt");
+    if (KSresults.is_open()) {
+        KSresults << save.vol << endl << save.workvol << endl << save.name;
+        KSresults.close();
+    }
+}
+
+void editworkvol(KS& k) {
+    cout << "Введите новое количество рабочих цехов: \n";
+    cin >> k.workvol;
 }
 
 int main(){
     setlocale(LC_ALL, "rus");
     truba crpipe;
     crpipe = createpipe(); // запись данных трубы и передача их в переменную crpipe
-    pipeediting(crpipe);
+    editpipe(crpipe); // редактирование признака "в ремонте"
     outcreatepipe(crpipe); // вывод данных трубы на консоль
     savecreatefile(crpipe); // сохранение данных трубы в файл piperesults.txt
     increatepipe(crpipe); // считывание данных из файла и вывод их на консоль 
     /*KS crKS;
     crKS = createKS();
+    editworkvol(crKS);
     outcreateKS(crKS);
     savecreateKS(crKS);
     increateKS(crKS);*/
