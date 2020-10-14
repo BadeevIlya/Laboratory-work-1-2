@@ -24,21 +24,21 @@ struct KS {
 
 truba createpipe () {
     truba pipe;
-    bool k;
     cout << "Считывание данных трубы" << endl << endl;
-    do {
+    while (1) {
         cout << "Введите диаметр\n";
         cin >> pipe.diametr;
         cout << "Введите длину\n";
         cin >> pipe.dlina;
-        k = true;
-        if (pipe.diametr < 0 || pipe.dlina < 0) {
-            k = false;
+        if (cin.fail()) {
             cin.clear();
-            cin.ignore(100, '\n');
+            cin.ignore(10000, '\n');
         }
-
-    } while (cin.fail() || k==false);
+        else if (pipe.diametr < 0 || pipe.dlina < 0) {
+            continue;
+        }
+        else break;
+    }
     pipe.id = "";
     pipe.remont = false;
     return pipe;
@@ -50,108 +50,95 @@ void editpipe(truba&edit) { // функция, которая отправляет на ремонт трубу
 
 
 
-void increatepipe(truba & in) {
-    cout << "Считанные из файла данные трубы:\n";
-    ifstream piperesults ("D:\piperesults.txt");
-    if (piperesults.is_open())
-    {
-        piperesults >> in.diametr >> in.dlina;
-        cout << in.diametr << endl << in.dlina << endl;
-        piperesults.close();
-    }
+void loadpipe(ifstream&fin , truba & t) {
+    fin >> t.diametr >> t.dlina;
 }
 
-void outcreatepipe(truba out) {
+void loadKS(ifstream& fin, KS& k) {
+    fin  >> k.vol >> k.workvol >> k.name;
+}
+
+void outpipe(truba &t, KS &k) {
     cout << "Введенные данные трубы:\n";
-    cout << "Диаметр: "<< out.diametr << endl <<"Длина: "<< out.dlina << endl;
+    cout << "Диаметр: "<< t.diametr << endl <<"Длина: "<< t.dlina << endl;
+    cout << "Введенные данные КС: \n";
+    cout << "Название:" << k.name << endl << "Количество цехов:" << k.vol << endl << "Количество рабочих цехов " << k.workvol << endl;
 }
 
-void savecreatefile(truba save ) {
-    cout << "Данные сохранены в файл\n";
-    ofstream outpiperesults("D:\piperesults.txt");
-    if (outpiperesults.is_open()) {
-        outpiperesults << save.diametr << endl << save.dlina << endl;
-        outpiperesults.close();
-    }
-}
-
-bool CorrectTypeKS(int a, int b) { // функция проверки на корректность ввода
-    return a and b >= 0;
-}
+//bool CorrectTypeKS(int a, int b) { // функция проверки на корректность ввода
+//   // return a and b >= 0;
+//}
 
 KS createKS() {
     KS ks;
     cout << "Считывание данных КС\n\n" ;
     cout << "Введите название\n";
-    getline(cin , ks.name);
-    do
-    {
-        cin.clear();
-        cin.ignore(100, '\n');
+    cin.get();
+    getline(cin, ks.name);
+    while (1) {
         cout << "Введите количество цехов\n";
         cin >> ks.vol;
         cout << "Введите количество рабочих цехов\n";
         cin >> ks.workvol;
-    } while (cin.fail() || !CorrectTypeKS(ks.vol,ks.workvol));
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(10000, '\n');   
+        }    
+        else if ( ks.workvol < 0 || ks.workvol>ks.vol ) {
+            continue;
+        }
+        else break;
+    }
     ks.id = "";
     ks.effect = 1;
     return ks;
 }
 
-void outcreateKS(KS out) {
-    cout << "Введенные данные КС:\n";
-    cout << "Количество цехов: "<<out.vol <<endl<<"Количество рабочих цехов: "<< out.workvol <<endl<<"Название: "<< out.name << endl ;
+
+
+void savepipe(ofstream&fout, truba t){
+    fout << t.diametr << endl << t.dlina << endl;
 }
 
-void increateKS(KS &in) {
-    cout << "Считанные из файла данные КС:\n";
-    ifstream KSresults("D:\piperesults.txt");
-    if (KSresults.is_open()) {
-        KSresults >> in.vol >> in.workvol >> in.name;
-        //cout << in.vol << endl << in.workvol << endl << in.name << endl;
-    }
-}
-
-
-void savecreateKS(KS save) {
-    cout << "Данные сохранены в файл\n";
-    ofstream KSresults("D:\piperesults.txt");
-    if (KSresults.is_open()) {
-        KSresults << save.vol << endl << save.workvol << endl << save.name;
-        KSresults.close();
-    }
+void saveKS(ofstream& fout, KS k) {
+    fout << k.vol << endl << k.workvol << endl << k.name << endl;
 }
 
 void editworkvol(KS& k) {
-    cout << "Введите новое количество рабочих цехов: \n";
-    cin >> k.workvol;
+    while (1) {
+        cout << "Введите новое количество рабочих цехов: \n";
+        cin >> k.workvol;
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(10000, '\n');
+        }
+        else if (k.workvol > k.vol || k.workvol < 0) {
+            continue;
+        }
+        else break;
+    } 
 }
 
-void printMenuPipe() {
+void printMenu() {
     cout << "1. Создать трубу\n"
-        << "2. Считать данные из файла\n"
-        << "3. Импорт данных в файл\n"
-        << "4. Отправить трубу на ремонт\n"
-        << "5. Вывод данных на консоль\n"
+        << "2. Создать КС\n"
+        << "3. Считать данные из файла\n"
+        << "4. Импорт данных в файл\n"
+        << "5. Отправить трубу на ремонт\n"
+        << "6. Ввести новое количество рабочих цехов\n"
+        << "7. Вывод данных на консоль\n"
         << "0. Выход\n";
 
-}
-
-void printMenuKS() {
-    cout << "1. Создать КС\n"
-        << "2. Считать данные из файла\n"
-        << "3. Импорт данных в файл\n"
-        << "4. Ввести новое количество рабочих цехов\n"
-        << "5. Вывод данных на консоль\n"
-        << "0. Выход\n";
 }
 
 int main(){
     setlocale(LC_ALL, "rus");
     truba crpipe;
-    bool p = true;
+    KS crKS;
+    bool p=false; // маркер для трубы
+    bool k=false; // маркер для КС
     while (1) {
-        printMenuPipe();
+        printMenu();
         int i = 0;
         cin >> i;
         switch (i) {
@@ -163,20 +150,43 @@ int main(){
             }
             case 2:
             {
-                increatepipe(crpipe); // считывание данных из файла и вывод их на консоль 
+                k = true;
+                crKS = createKS();
                 break;
             }
             case 3:
             {
-                if (p == true) {
-                    savecreatefile(crpipe); // сохранение данных трубы в файл piperesults.txt
+                ifstream fin("D:\ results.txt");
+                if (fin.is_open()) {
+                    fin >> p >> k;
+                    if (p) {
+                        loadpipe(fin, crpipe);
+                    }
+                    if (k) {
+                        loadKS(fin, crKS);
+                    }
+                    fin.close();
                 }
-                else {
-                    cout << "Значения трубы не заданы!\n";
-                }
+                
                 break;
             }
             case 4:
+            {
+                ofstream fout;
+                fout.open("D:\ results.txt");
+                if (fout.is_open()) {
+                    fout << p << endl <<  k << endl;
+                    if (p) {
+                        savepipe(fout, crpipe);
+                    }
+                    if (k) {
+                        saveKS(fout, crKS);
+                    }
+                    fout.close();
+                }
+                break;
+            }
+            case 5:
             {
                 if (p == true) {
                     editpipe(crpipe); // редактирование признака "в ремонте"
@@ -187,14 +197,24 @@ int main(){
                 
                 break;
             }
-            case 5:
+            case 6:
             {
-                if (p == true) {
-                    outcreatepipe(crpipe); // вывод данных трубы на консоль
+                if (k == true) {
+                    editworkvol(crKS);
+                }
+                else {
+                    cout << "Значения КС не заданы!\n";
+                }                
+                break;
+            }
+            case 7:
+            {
+                if (p == true & k==true) {
+                    outpipe(crpipe , crKS); // вывод данных трубы и КС на консоль
                 }
                 else {
                     cout << "Значения трубы не заданы!\n";
-                }                
+                }
                 break;
             }
             case 0:
@@ -213,7 +233,7 @@ int main(){
    
     
     
-    KS crKS;
+    /*KS crKS;
     bool k = true;
     while (1) {
         printMenuKS();
@@ -265,9 +285,9 @@ int main(){
             }
         
         
-        }
+        }*/
         
-    }
+    
     
     
     
