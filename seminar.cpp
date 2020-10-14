@@ -55,14 +55,19 @@ void loadpipe(ifstream&fin , truba & t) {
 }
 
 void loadKS(ifstream& fin, KS& k) {
-    fin  >> k.vol >> k.workvol >> k.name;
+    fin  >> k.vol >> k.workvol >> k.name >> k.effect;
 }
 
-void outpipe(truba &t, KS &k) {
+void outpipe(truba t) {
     cout << "Введенные данные трубы:\n";
     cout << "Диаметр: "<< t.diametr << endl <<"Длина: "<< t.dlina << endl;
+    
+}
+
+void outKS(KS k) {
     cout << "Введенные данные КС: \n";
-    cout << "Название:" << k.name << endl << "Количество цехов:" << k.vol << endl << "Количество рабочих цехов " << k.workvol << endl;
+    cout << "Название:" << k.name << endl << "Количество цехов:" << k.vol << endl << "Количество рабочих цехов: " << k.workvol << endl 
+        << "Эффективность:" << k.effect << endl ;
 }
 
 //bool CorrectTypeKS(int a, int b) { // функция проверки на корректность ввода
@@ -80,17 +85,18 @@ KS createKS() {
         cin >> ks.vol;
         cout << "Введите количество рабочих цехов\n";
         cin >> ks.workvol;
+        cout << "Введите эффективноть от 0 до 10\n";
+        cin >> ks.effect;
         if (cin.fail()) {
             cin.clear();
             cin.ignore(10000, '\n');   
         }    
-        else if ( ks.workvol < 0 || ks.workvol>ks.vol ) {
+        else if ( ks.workvol < 0 || ks.workvol>ks.vol || ks.effect <0 || ks.effect>10) {
             continue;
         }
         else break;
     }
     ks.id = "";
-    ks.effect = 1;
     return ks;
 }
 
@@ -101,7 +107,7 @@ void savepipe(ofstream&fout, truba t){
 }
 
 void saveKS(ofstream& fout, KS k) {
-    fout << k.vol << endl << k.workvol << endl << k.name << endl;
+    fout << k.vol << endl << k.workvol << endl << k.name << endl << k.effect << endl;
 }
 
 void editworkvol(KS& k) {
@@ -126,7 +132,8 @@ void printMenu() {
         << "4. Импорт данных в файл\n"
         << "5. Отправить трубу на ремонт\n"
         << "6. Ввести новое количество рабочих цехов\n"
-        << "7. Вывод данных на консоль\n"
+        << "7. Вывод данных трубы\n"
+        << "8. Вывод данных КС\n"
         << "0. Выход\n";
 
 }
@@ -140,7 +147,14 @@ int main(){
     while (1) {
         printMenu();
         int i = 0;
-        cin >> i;
+        while (1) {
+            cin >> i;
+            if (cin.fail()) {
+                cin.clear();
+                cin.ignore(10000, '\n');
+            }
+            else break;
+        }
         switch (i) {
             case 1:
             {
@@ -209,8 +223,18 @@ int main(){
             }
             case 7:
             {
-                if (p == true & k==true) {
-                    outpipe(crpipe , crKS); // вывод данных трубы и КС на консоль
+                if (p) {
+                    outpipe(crpipe); // вывод данных трубы на консоль
+                }
+                else {
+                    cout << "Значения трубы не заданы!\n";
+                }
+                break;
+            }
+            case 8:
+            {
+                if (k) {
+                    outKS(crKS); // вывод данных КС на консоль
                 }
                 else {
                     cout << "Значения трубы не заданы!\n";
