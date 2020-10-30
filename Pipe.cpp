@@ -1,53 +1,31 @@
 #include "Pipe.h"
 #include <iostream>
+#include "utils.h"
 #include <fstream>
 
+int Pipe::MaxID = 0 ;
+
+Pipe::Pipe() {
+    id = MaxID++;
+    remont = false;
+
+}
 
 ostream& operator << (ostream& out, const Pipe& p)
 {
-	out << "¬веденные данные трубы:\n";
-	out << "ƒиаметр: " << p.diametr << endl << "ƒлина: " << p.dlina << endl;
+	out << "“руба " <<p.id<< endl;
+    out << "ƒиаметр: " << p.diametr << endl << "ƒлина: " << p.dlina << endl;
 	return out;
 }
 
 istream& operator>>(istream& in, Pipe& p)
 {
-    while (1) {
-        cout << "¬ведите диаметр\n";
-        in >> p.diametr;
-        cout << "¬ведите длину\n";
-        in >> p.dlina;
-        if (in.fail()) {
-            in.clear();
-            in.ignore(10000, '\n');
-        }
-        else if (p.diametr < 0 || p.dlina < 0) {
-            continue;
-        }
-        else break;
-    }
-    p.remont = false;
+    p.diametr = GetCorrectNumber("¬ведите диаметр", 0, 10000);
+    p.dlina = GetCorrectNumber("¬ведите длину", 0.0, 10000.0);
     return in;
 }
 
-//ifstream& LoadPipe(ifstream& fin, Pipe&p)
-//{
-//    fin >> p.diametr >> p.dlina;
-//}
-
-void Pipe::LoadPipe(ifstream& fin)
-{
-    fin >> diametr >> dlina;
-}
 
 
-void Pipe::ChangeStatusPipe()
-{
-    remont = !remont;
-}
 
-
-void Pipe::SavePipe(ofstream& fout, const Pipe& t) {
-    fout << t.diametr << endl << t.dlina << endl;
-}
 
