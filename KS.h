@@ -12,7 +12,6 @@ public:
     static int MaxID;
     int effect; // эффективноть 
 
-    KS();
     friend ostream& operator << (ostream& out, const KS& k);
     friend istream& operator >> (istream& in, KS& k);
 };

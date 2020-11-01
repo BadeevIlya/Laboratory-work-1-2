@@ -4,6 +4,8 @@
 #include "KS.h"
 #include "Pipe.h"
 #include <vector>
+#include <fstream>
+
 
 
 template<typename T>
@@ -16,13 +18,6 @@ T GetCorrectNumber(std::string text, T min, T max) {
         std::cout << "Введите значение (" << min << "-" << max << "):";
     }
     return n;
-}
-
-template<typename T>
-T& SelectId(vector<T>& id) {
-    size_t i = 1;
-    size_t index = GetCorrectNumber("Введите номер", i, id.size());
-    return id[index - 1];
 }
 
 
@@ -39,4 +34,18 @@ vector<int> UsingFilter(const vector<T1>& pipeline, Filter<T1,T2> f, T2 parametr
         i++;
     }
     return index;
+}
+
+template<typename T>
+int GetID(vector<T>& t) {
+    int i = 0;
+    while (1){
+        int id = GetCorrectNumber("Введите id", 0, 10000);
+        for (auto& tt : t) {
+            if (tt.id == id)
+                return i;
+            i++;
+        }
+        cout << "Такого id не существует" << endl;
+    }
 }

@@ -15,8 +15,6 @@ public:
     string name;
     static int MaxID; //
 
-
-    Pipe();
     friend ostream& operator << (ostream& out, const Pipe& p);
     friend istream& operator >> (istream& in, Pipe& p);
 };
