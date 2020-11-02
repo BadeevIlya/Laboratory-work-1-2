@@ -33,12 +33,12 @@ using namespace std;
 //    return pipe;
 //}
 
-void ChangeStatusPipe(Pipe& p)
+void ChangeStatusPipe(Pipe& p) // функция для отправки трубы на ремонт
 {
     p.remont = !p.remont;
 }
 
-void ChangeW_Count(KS& k)
+void ChangeW_Count(KS& k) // функция для изменения количества рабочих цехов
 {
     k.w_count = GetCorrectNumber("Введите новое количество рабочих цехов", 0, k.count);
 }
@@ -63,7 +63,7 @@ void SaveKS(ofstream& fout, const KS&k) {
     fout << k.id << endl << k.name << endl << k.count << endl << k.w_count << endl << k.effect << endl;
 }
 
-int LoadMaxID() {
+int LoadMaxID() { // функция загружает из файла максимальный ID
     ifstream fin("D:\ MaxID.txt");
     if (fin.is_open())
         fin >> Pipe::MaxID >> KS::MaxID;
@@ -71,7 +71,7 @@ int LoadMaxID() {
     return 0;
 }
 
-void SaveMaxID() {
+void SaveMaxID() { // функция для сохранения максимального ID
     ofstream fout("D:\ MaxID.txt");
     if (fout.is_open())
         fout << Pipe::MaxID << endl << KS::MaxID;
@@ -92,19 +92,19 @@ void DeleteKS(vector<KS>& k) {
 }
 
 
-bool CheckPipeId(const Pipe& p, int parametr) {
+bool CheckPipeId(const Pipe& p, int parametr) { // функция-фильтр для нахождения трубы по id 
     return p.id == parametr;
 }
 
-bool CheckStatusRemont(const Pipe& p, bool parametr) {
+bool CheckStatusRemont(const Pipe& p, bool parametr) { //функция-фильтр для нахождения всех труб на ремонте
     return p.remont == parametr;
 }
 
-bool CheckNameKS(const KS& k, string parametr) {
+bool CheckNameKS(const KS& k, string parametr) { //функция-фильтр для нахождения КС по имени
     return k.name == parametr;
 }
 
-bool CheckUnworkKS(const KS& k, double parametr) { 
+bool CheckUnworkKS(const KS& k, double parametr) { //функция-фильтр для нахождения КС по желаемому проценту рабочих цехов
     double i = (1 - (double)k.w_count/(double)k.count)*100 ;
     return i == parametr;
 }
@@ -123,6 +123,10 @@ void printMenu() {
         << "9. Удалить трубу\n"
         << "10. Удалить КС\n"
         << "11. Фильтр труб по id\n"
+        << "12. Показать трубы на ремонте\n"
+        << "13. Найти КС по названию\n"
+        << "14. Найти КС по проценту рабочих цехов\n"
+        << "15. Пакетное редактирование\n"
         << "0. Выход\n"
         << "Выбирите действие";
 }
@@ -135,203 +139,201 @@ int main(){
     while (1) {
         printMenu();
         switch (GetCorrectNumber("", 0,15)) {
-            case 1:
-            {
-                Pipe p;
-                cin >> p;
-                pipeline.push_back(p);
-                break;
+        case 1:
+        {
+            Pipe p;
+            cin >> p;
+            pipeline.push_back(p);
+            break;
+        }
+        case 2: {
+            KS k;
+            cin >> k;
+            ksgroup.push_back(k);
+            break;
+        }
+        case 3: {
+            ifstream fin("D:\ results.txt");
+            if (fin.is_open()) {
+                pipeline.clear();
+                ksgroup.clear();
+                int p_count, ks_count;
+                fin >> p_count >> ks_count;
+                while (p_count--)
+                    pipeline.push_back(LoadPipe(fin));
+                while (ks_count--)
+                    ksgroup.push_back(LoadKS(fin));
+                fin.close();
             }
-            case 2:
-            {
-                KS k;
-                cin >> k;
-                ksgroup.push_back(k);
-                break;
+            break;
+        }
+        case 4: {
+            ofstream fout;
+            fout.open("D:\ results.txt");
+            if (fout.is_open()) {
+                fout << pipeline.size() << endl << ksgroup.size() << endl;
+                for (Pipe t : pipeline)
+                    SavePipe(fout, t);
+                for (KS kk : ksgroup)
+                    SaveKS(fout, kk);
+                fout.close();
+                pipeline.clear();
+                ksgroup.clear();
             }
-            case 3:
-            {
-                ifstream fin("D:\ results.txt");
-                if (fin.is_open()) {
-                    pipeline.clear();
-                    ksgroup.clear();
-                    int p_count, ks_count;
-                    fin >> p_count >> ks_count;
-                    while (p_count--)
-                        pipeline.push_back(LoadPipe(fin));
-                    while (ks_count--)
-                        ksgroup.push_back(LoadKS(fin));
-                    fin.close();
-                }
-                break;
+            break;
+        }
+        case 5: {
+            if (!pipeline.empty()) {
+                ChangeStatusPipe(pipeline[GetID(pipeline)]);
             }
-            case 4:
-            {
-                ofstream fout;
-                fout.open("D:\ results.txt");
-                if (fout.is_open()) {
-                    fout << pipeline.size() << endl <<  ksgroup.size() << endl;
-                    for (Pipe t : pipeline)
-                        SavePipe(fout,t);
-                    for (KS kk : ksgroup)
-                        SaveKS(fout,kk);
-                    fout.close();
-                    pipeline.clear();
-                    ksgroup.clear();
-                }
-                break;
+            else {
+                cout << "Значения трубы не заданы!\n";
             }
-            case 5:
-            {
-                if (!pipeline.empty()) {
-                    ChangeStatusPipe(pipeline[GetID(pipeline)]);
-                }
-                else {
-                    cout << "Значения трубы не заданы!\n";
-                }
-                break;
+            break;
+        }
+        case 6: {
+            if (!ksgroup.empty()) {
+                ChangeW_Count(ksgroup[GetID(ksgroup)]);
             }
-            case 6:
-            {
-                if (!ksgroup.empty()) {
-                    ChangeW_Count(ksgroup[GetID(ksgroup)]);
-                }
-                else {
-                    cout << "Значения КС не заданы!\n";
-                }                
-                break;
+            else {
+                cout << "Значения КС не заданы!\n";
             }
-            case 7:
-            {
-                if (!pipeline.empty()) {
-                    for (auto& p : pipeline) 
-                        cout << p; // Вывод данных труб на консоль 
-                }
-                else {
-                    cout << "Значения трубы не заданы!\n";
-                }
-                break;
+            break;
+        }
+        case 7: {
+            if (!pipeline.empty()) {
+                for (auto& p : pipeline)
+                    cout << p; // Вывод данных труб на консоль 
             }
-            case 8:
-            {
-                if (!ksgroup.empty()) {
-                    for (auto& k : ksgroup)
-                        cout << k;// вывод данных КС на консоль
-                }
-                else {
-                    cout << "Значения КС не заданы!\n";
-                }
-                break;
+            else {
+                cout << "Значения трубы не заданы!\n";
             }
-            case 9:
-            {
-                if (!pipeline.empty()) {
+            break;
+        }
+        case 8: {
+            if (!ksgroup.empty()) {
+                for (auto& k : ksgroup)
+                    cout << k;// вывод данных КС на консоль
+            }
+            else {
+                cout << "Значения КС не заданы!\n";
+            }
+            break;
+        }
+        case 9: {
+            if (!pipeline.empty()) {
 
-                    DeletePipe(pipeline);
-                }
-                else {
-                    cout << "Значения трубы не заданы!\n";
-                }
-                break;
+                DeletePipe(pipeline);
             }
-            case 10:
-            {
-                if (!ksgroup.empty()) {
-                    DeleteKS(ksgroup);
-                }
-                else {
-                    cout << "Значения КС не заданы!\n";
-                }
-                break;
-            
+            else {
+                cout << "Значения трубы не заданы!\n";
             }
-            case 11:
-            {
-                if (!pipeline.empty()) {
-                    int i = GetCorrectNumber("Введите id трубы", 0, 1111);
-                    if (i == 1) {
+            break;
+        }
+        case 10: {
+            if (!ksgroup.empty()) {
+                DeleteKS(ksgroup);
+            }
+            else {
+                cout << "Значения КС не заданы!\n";
+            }
+            break;
+        }
+        case 11: {
+            if (!pipeline.empty()) {
+                int i = GetCorrectNumber("Введите id трубы", 0, 1111);
+                if (i == 1) {
 
+                }
+                for (int index : UsingFilter(pipeline, CheckPipeId, i))
+                    cout << pipeline[index];
+            }
+            else {
+                cout << "Значения КС не заданы!\n";
+            }
+            break;
+        }
+        case 12: {
+            if (!pipeline.empty()) {
+                for (int index : UsingFilter(pipeline, CheckStatusRemont, true))
+                    cout << pipeline[index];
+            }
+            else {
+                cout << "Значения КС не заданы!\n";
+            }
+            break;
+        }
+        case 13: {
+            if (!ksgroup.empty()) {
+                string name;
+                cout << "Название КС:  ";
+                cin.get();
+                getline(cin, name);
+                for (int index : UsingFilter(ksgroup, CheckNameKS, name))
+                    cout << ksgroup[index];
+            }
+            else {
+                cout << "Значения КС не заданы!\n";
+            }
+            break;
+        }
+        case 14: {
+            if (!ksgroup.empty()) {
+                double i = GetCorrectNumber("Введите искомый процент", 0.0, 100.0);
+                for (int index : UsingFilter(ksgroup, CheckUnworkKS, i))
+                    cout << ksgroup[index];
+            }
+            else {
+                cout << "Значения КС не заданы!\n";
+            }
+            break;
+        }
+        case 15: {
+            if (!pipeline.empty()) {
+                cout << "1 - Отправить все трубы на ремонт;" << endl << "2 - Выбрать трубы для отправки на ремонт;" << endl;
+                int Choice = GetCorrectNumber(" ", 1, 2);
+                if (Choice == 1) {
+                    for (auto& p : pipeline)
+                        ChangeStatusPipe(p);
+                }
+                else {
+                    cout << "Для выхода нажмите 0, для продолжения 1" << endl;
+                    /*vector <int> i;
+                    int id=0;
+                    while (id!=-1 || i.size()<pipeline.size()) {
+                        id = GetCorrectNumber("", -1, 10000);
+                        i.push_back(id);
                     }
-                    for (int index: UsingFilter(pipeline, CheckPipeId, i))
-                        cout << pipeline[index];
-                }
-                else {
-                    cout << "Значения КС не заданы!\n";
-                }
-                break;
-            }
-            case 12:
-            {
-                if (!pipeline.empty()) {
-                    for (int index : UsingFilter(pipeline, CheckStatusRemont, true))
-                        cout << pipeline[index];
-                }
-                else {
-                    cout << "Значения КС не заданы!\n";
-                }
-                break;
-            }
-            case 13:
-            {
-                if (!ksgroup.empty()) {
-                    string name;
-                    cout << "Название КС:  ";
-                    cin.get();
-                    getline(cin, name);
-                    for (int index : UsingFilter(ksgroup, CheckNameKS, name))
-                        cout << ksgroup[index];
-                }
-                else {
-                    cout << "Значения КС не заданы!\n";
-                }
-                break;
-            }
-            case 14:
-            {
-                if (!ksgroup.empty()) {
-                    double i = GetCorrectNumber("Введите искомый процент", 0.0, 100.0);
-                    for (int index : UsingFilter(ksgroup, CheckUnworkKS, i))
-                        cout << ksgroup[index];
-                }
-                else {
-                    cout << "Значения КС не заданы!\n";
-                }
-                break;
-            }
-            case 15:
-            {
-                if (!pipeline.empty()) {
-                    cout << "1 - Отправить все трубы на ремонт;" << endl << "2 - Выбрать трубы для отправки на ремонт;" << endl;
-                    int Choice = GetCorrectNumber(" - ", 1, 2);
-                    if (Choice == 1) {
-                        for (auto& p : pipeline)
-                            ChangeStatusPipe(p);
+                    for (auto& pe : i) {
+                        for (auto& qq : UsingFilter(pipeline, CheckPipeId, pe))
+                            ChangeStatusPipe(pipeline[qq]);
                     }
-                    else {
-                        cout << "Для завершения нажмите -1" << endl;
-                        while (1) {
-                            ChangeStatusPipe(pipeline[GetID(pipeline)]);
-                        }
-
+                     */
+                    while (1) {
+                        ChangeStatusPipe(pipeline[GetID(pipeline)]);
+                        int answer = GetCorrectNumber("Выйти? ", 0, 1);
+                        if (answer == 1)
+                            break;
                     }
                 }
-                else {
-                    cout << "Значения трубы не заданы!\n";
-                }
-                break;
             }
-
-            case 0:
-            {
-                SaveMaxID();
-                return 0;
+            else {
+                cout << "Значения трубы не заданы!\n";
             }
-            default: {
-                cout << "Ошибка ввода!\n";
-            }
+            break;
+        }
+        case 0: 
+        {
+            SaveMaxID();
+            return 0;
+        }
+        default: {
+            cout << "Ошибка ввода!\n";
+        }
         }
     }
 }
+
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu

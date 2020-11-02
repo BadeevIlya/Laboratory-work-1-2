@@ -6,13 +6,11 @@
 #include <vector>
 #include <fstream>
 
-
-
 template<typename T>
 T GetCorrectNumber(std::string text, T min, T max) {
     T n;
     std::cout << text << ":  ";
-    while ((std::cin >> n).fail() || n<min || n>max) {
+    while ((std::cin >> n).fail() || n<min || n>max  ) {
         cin.clear();
         cin.ignore(10000, '\n');
         std::cout << "Введите значение (" << min << "-" << max << "):";
@@ -47,5 +45,6 @@ int GetID(vector<T>& t) {
             i++;
         }
         cout << "Такого id не существует" << endl;
+        i = 0;
     }
 }

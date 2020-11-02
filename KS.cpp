@@ -21,6 +21,6 @@ istream& operator>>(istream& in, KS& k)
     getline(in, k.name);
     k.count = GetCorrectNumber("¬ведите количество цехов", 1, 10000);
     k.w_count = GetCorrectNumber("¬ведите количество рабочих цехов", 0, k.count);;
-    k.effect = GetCorrectNumber("¬ведите эффективноть от 0 до 10", 1 , 10);    
+    k.effect = GetCorrectNumber("¬ведите эффективноть от 1 до 10", 1 , 10);    
     return in;
 }
