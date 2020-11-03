@@ -34,6 +34,8 @@ vector<int> UsingFilter(const vector<T1>& pipeline, Filter<T1,T2> f, T2 parametr
     return index;
 }
 
+
+
 template<typename T>
 int GetID(vector<T>& t) {
     int i = 0;

@@ -109,6 +109,14 @@ bool CheckUnworkKS(const KS& k, double parametr) { //функция-фильтр для нахожден
     return i == parametr;
 }
 
+string GetFileName() {
+    string file;
+    cout << " Введите название файла: " << endl;
+    cin.get();
+    getline(cin, file);
+    return file;
+}
+
 
 
 void printMenu() {
@@ -153,7 +161,8 @@ int main(){
             break;
         }
         case 3: {
-            ifstream fin("D:\ results.txt");
+            //D:\ results.txt
+            ifstream fin(GetFileName());
             if (fin.is_open()) {
                 pipeline.clear();
                 ksgroup.clear();
@@ -168,18 +177,21 @@ int main(){
             break;
         }
         case 4: {
-            ofstream fout;
-            fout.open("D:\ results.txt");
-            if (fout.is_open()) {
-                fout << pipeline.size() << endl << ksgroup.size() << endl;
-                for (Pipe t : pipeline)
-                    SavePipe(fout, t);
-                for (KS kk : ksgroup)
-                    SaveKS(fout, kk);
-                fout.close();
-                pipeline.clear();
-                ksgroup.clear();
+            if (!pipeline.empty() & !ksgroup.empty()) {
+                ofstream fout(GetFileName());
+                if (fout.is_open()) {
+                    fout << pipeline.size() << endl << ksgroup.size() << endl;
+                    for (Pipe t : pipeline)
+                        SavePipe(fout, t);
+                    for (KS kk : ksgroup)
+                        SaveKS(fout, kk);
+                    fout.close();
+                    pipeline.clear();
+                    ksgroup.clear();
+                }
             }
+            else
+                cout << "Задайте трубу или КС!\n";
             break;
         }
         case 5: {
